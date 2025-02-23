@@ -1,4 +1,3 @@
-import Questions from "@/components/Questions.vue";
 import Questions from "@/components/Questions/Questions.vue";
 import Question from "@/components/Questions/Question.vue";
 
