@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
-      <RouterLink class="navbar-brand fw-bold" to="/" >STACKFLOW</RouterLink>
+      <RouterLink class="navbar-brand fw-bold text-warning" to="/" >STACKFLOW</RouterLink>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,7 +47,6 @@
   letter-spacing: 1px;
 }
 
-/* Custom button */
 .btn-primary {
   background-color: #f8d210;
   border-color: #f8d210;

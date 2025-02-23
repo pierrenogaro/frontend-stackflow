@@ -1,6 +1,9 @@
 <template>
+  <body>
   <Navbar></Navbar>
   <RouterView/>
+  </body>
+
 </template>
 
 
@@ -10,5 +13,7 @@ import Navbar from "@/components/Navbar.vue";
 </script>
 
 <style>
-
+body {
+  background-color: #121212;
+}
 </style>
