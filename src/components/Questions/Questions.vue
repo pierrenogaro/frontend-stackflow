@@ -1,10 +1,10 @@
 <template>
   <div class="container mt-4">
-    <h1 class="text-center display-4 mb-4 text-warning">Liste des Questions</h1>
+    <h1 class="text-center display-4 mb-4">List of Questions</h1>
 
     <div v-if="loading" class="text-center">
       <div class="spinner-border text-warning" role="status">
-        <span class="visually-hidden">Chargement...</span>
+        <span class="visually-hidden">Loading...</span>
       </div>
     </div>
 
@@ -20,35 +20,28 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 
-export default {
-  data() {
-    return {
-      questions: [],
-      loading: false,
-      error: null,
-    };
-  },
-  methods: {
-    async fetchQuestions() {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await axios.get('http://localhost:8000/questions/');
-        this.questions = response.data;
-      } catch (err) {
-        this.error = 'Erreur lors du chargement des questions';
-      } finally {
-        this.loading = false;
-      }
-    }
-  },
-  created() {
-    this.fetchQuestions();
+const questions = ref([]);
+const loading = ref(false);
+const error = ref(null);
+
+const fetchQuestions = async () => {
+  loading.value = true;
+  error.value = null;
+  try {
+    const response = await axios.get('http://localhost:8000/questions/');
+    questions.value = response.data;
+  } catch (err) {
+    error.value = 'Erreur lors du chargement des questions';
+  } finally {
+    loading.value = false;
   }
 };
+
+onMounted(fetchQuestions);
 </script>
 
 <style scoped>
