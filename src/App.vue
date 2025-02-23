@@ -1,13 +1,12 @@
 <template>
-  <div class="container">
-    <h1 class="text-primary">Test Bootstrap</h1>
-    <button class="btn btn-success">Click Me</button>
-  </div>
+  <Navbar></Navbar>
+  <RouterView/>
 </template>
 
 
 <script setup>
 
+import Navbar from "@/components/Navbar.vue";
 </script>
 
 <style>
