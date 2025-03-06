@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <div class="container">
-      <RouterLink class="navbar-brand fw-bold text-warning" to="/" >STACKFLOW</RouterLink>
+      <RouterLink class="navbar-brand fw-bold text-warning" to="/">STACKFLOW</RouterLink>
 
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
               aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -11,7 +11,7 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <RouterLink class="nav-link active" to="/home">Home</RouterLink>
+            <RouterLink class="nav-link" to="/home">Home</RouterLink>
           </li>
           <li class="nav-item">
             <RouterLink class="nav-link" to="/favorite">Favorite</RouterLink>
@@ -24,12 +24,34 @@
           </li>
         </ul>
 
-        <button class="btn btn-primary ms-3">Login</button>
-        <button class="btn btn-danger ms-3">Register</button>
+        <div v-if="isAuthenticated">
+          <span class="navbar-text text-warning fw-bold me-3">👤 {{ username }}</span>
+          <button class="btn btn-danger" @click="handleLogout">Logout</button>
+        </div>
+
+        <div v-else>
+          <RouterLink class="btn btn-primary ms-3" to="/login">Login</RouterLink>
+          <RouterLink class="btn btn-danger ms-3" to="/register">Register</RouterLink>
+        </div>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { computed } from "vue";
+import { useAuth } from "@/composables/useAuth";
+
+const { logout, user, isAuthenticated } = useAuth();
+
+const username = computed(() => user.value || "Invité");
+
+const handleLogout = () => {
+  logout();
+};
+</script>
+
+
 
 <style scoped>
 .navbar-nav .nav-link {
@@ -58,5 +80,3 @@
   border-color: #ffbe0b;
 }
 </style>
-<script setup lang="ts">
-</script>

@@ -21,8 +21,9 @@
         <div class="answer-container border-warning shadow-lg p-3 rounded" style="max-height: 300px; overflow-y: auto;">
           <ul class="list-group">
             <li v-for="answer in answers" :key="answer.id" class="list-group-item bg-dark text-light border-warning mb-2">
-              <p class="mb-2 fs-5">🗨️ {{ answer.content }}</p>
-              <p>Author: <strong>{{ answer.author }}</strong></p>
+              <p class="mb-2 fs-5">🗨️ {{ answer.content || "No message" }}</p>
+              <p>Author: <strong>{{ answer.author || "Unknown author" }}</strong></p>
+              <p class="small">📅 {{ formatDate(answer.date_created) }}</p>
             </li>
           </ul>
         </div>
@@ -43,7 +44,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 
@@ -58,7 +59,7 @@ const fetchQuestion = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get(`http://localhost:8000/questions/${route.params.id}/`);
+    const response = await axios.get(`http://127.0.0.1:8000/questions/${route.params.id}/?t=${new Date().getTime()}`);
     question.value = response.data.question;
     answers.value = response.data.answers;
   } catch (err) {
@@ -70,15 +71,50 @@ const fetchQuestion = async () => {
 
 const submitAnswer = async () => {
   if (!newAnswer.value.trim()) return;
+
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to post an answer.");
+    return;
+  }
+
   try {
-    const response = await axios.post(`http://localhost:8000/questions/${route.params.id}/answers/`, {
-      content: newAnswer.value,
-    });
-    answers.value.push(response.data);
+    const response = await axios.post(
+        `http://127.0.0.1:8000/questions/${route.params.id}/answers/`,
+        { content: newAnswer.value },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+    );
+
+    console.log("Answer added:", response.data);
+
     newAnswer.value = "";
+
+    await fetchQuestion();
+
   } catch (err) {
     console.error("Error adding the answer", err);
+    alert("Failed to add the answer. Please check your authentication.");
   }
+};
+
+watchEffect(() => {
+  fetchQuestion();
+});
+
+const formatDate = (isoString) => {
+  const date = new Date(isoString);
+  return date.toLocaleString("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 onMounted(fetchQuestion);
