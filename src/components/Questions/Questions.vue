@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5">
+  <div class="container-lg mt-5">
     <h1 class="text-center display-3 fw-bold text-warning">📜 List of Questions</h1>
 
     <div v-if="loading" class="text-center mt-5">
@@ -10,20 +10,26 @@
 
     <div v-else-if="error" class="alert alert-danger text-center">{{ error }}</div>
 
-    <ul v-else class="list-group">
-      <li v-for="question in questions" :key="question.id" class="list-group-item bg-dark text-light border-warning shadow-sm p-4">
-        <h2 class="h5 fw-bold text-warning">📌 {{ question.title }}</h2>
-        <p class="mb-2 fs-5">📝 {{ question.question }}</p>
-        <p>🤵‍♂️ {{ question.author }}</p>
-
-        <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">
-          🔍 View Question
-        </router-link>
-        <button @click="deleteQuestion(question.id)" class="btn btn-outline-danger btn-sm mt-2">
-          🗑 Delete
-        </button>
-      </li>
-    </ul>
+    <div v-else class="card bg-dark text-light border-warning shadow-lg p-4">
+      <div class="card-body">
+        <h2 class="text-warning fw-bold">📌 Questions:</h2>
+        <div class="question-container border-warning shadow-lg p-3 rounded" style="max-height: 500px; overflow-y: auto;">
+          <ul class="list-group">
+            <li v-for="question in questions" :key="question.id" class="list-group-item bg-dark text-light border-warning mb-2">
+              <h3 class="h5 fw-bold text-warning">📌 {{ question.title }}</h3>
+              <p class="mb-2 fs-5">📝 {{ question.question }}</p>
+              <p>🤵‍♂️ {{ question.author }}</p>
+              <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">
+                🔍 View Question
+              </router-link>
+              <button @click="deleteQuestion(question.id)" class="btn btn-outline-danger btn-sm mt-2">
+                🗑 Delete
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <div class="mt-5 p-4 bg-dark text-light border-warning shadow rounded">
       <h2 class="text-warning">📝 Post a Question</h2>
@@ -109,23 +115,24 @@ onMounted(fetchQuestions);
 </script>
 
 <style scoped>
-.container {
+.container-lg {
   max-width: 900px;
   margin: auto;
 }
 
-.list-group-item {
-  background-color: #343a40;
-  border-left: 4px solid #f8d210;
-  border-radius: 10px;
-  margin-bottom: 10px;
+.card {
+  border-radius: 15px;
   padding: 20px;
-  transition: transform 0.2s ease-in-out;
+  margin-top: 20px;
+  box-shadow: 0px 4px 10px rgba(248, 210, 16, 0.5);
 }
 
-.list-group-item:hover {
-  transform: scale(1.02);
-  box-shadow: 0px 4px 10px rgba(248, 210, 16, 0.5);
+.question-container {
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 10px;
+  max-height: 500px;
+  overflow-y: auto;
+  padding: 10px;
 }
 
 .text-warning {
