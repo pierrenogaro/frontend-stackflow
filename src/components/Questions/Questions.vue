@@ -22,12 +22,8 @@
               <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">
                 🔍 View Question
               </router-link>
-
-              <button
-                  v-if="isAuthenticated && question.author === currentUser"
-                  @click="deleteQuestion(question.id)"
-                  class="btn btn-outline-danger btn-sm mt-2">
-                🗑 Delete
+              <button class="btn btn-outline-info btn-sm mt-2">
+                ❤️ Add Favorite
               </button>
             </li>
           </ul>
