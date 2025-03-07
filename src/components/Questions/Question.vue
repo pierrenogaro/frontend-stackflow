@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg mt-5">
+  <div class="container-lg mb-5">
     <div v-if="loading" class="text-center mt-5">
       <div class="spinner-border text-warning" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -17,16 +17,18 @@
 
       <hr class="border-warning">
       <div v-if="answers.length > 0" class="mt-4">
-        <h3 class="text-warning fw-bold">💬 Answers:</h3>
+        <h3 class="text-warning fw-bold">💬 Answers :</h3>
         <div class="answer-container border-warning shadow-lg p-3 rounded" style="max-height: 300px; overflow-y: auto;">
           <ul class="list-group">
             <li v-for="answer in answers" :key="answer.id" class="list-group-item bg-dark text-light border-warning mb-2">
               <p class="mb-2 fs-5">🗨️ {{ answer.content || "No message" }}</p>
               <p>Author: <strong>{{ answer.author || "Unknown author" }}</strong></p>
               <p class="small">📅 {{ formatDate(answer.date_created) }}</p>
-              <button @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm mt-2">
-                🗑 Delete
-              </button>
+              <div>
+                <button @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm mt-2">
+                  🗑 Delete
+                </button>
+              </div>
             </li>
           </ul>
         </div>
@@ -42,6 +44,37 @@
           <button type="submit" class="btn btn-warning w-100">Send</button>
         </form>
       </div>
+
+      <hr class="border-warning mt-4">
+
+      <div v-if="comments.length > 0" class="mt-4">
+        <h3 class="text-warning fw-bold">💭 Comments :</h3>
+        <div class="comment-container border-warning shadow-lg p-3 rounded" style="max-height: 300px; overflow-y: auto;">
+          <ul class="list-group">
+            <li v-for="comment in comments" :key="comment.id" class="list-group-item bg-dark text-light border-warning mb-2">
+              <p class="mb-2 fs-5">💬 {{ comment.content || "No comment" }}</p>
+              <p>Author: <strong>{{ comment.author || "Unknown author" }}</strong></p>
+              <p class="small">📅 {{ formatDate(comment.date_created) }}</p>
+              <div>
+                <button @click="deleteComment(comment.id)" class="btn btn-outline-danger btn-sm mt-2">
+                  🗑 Delete
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div v-else class="alert alert-warning text-center mt-4">No comments for this question.</div>
+
+      <div class="mt-4">
+        <h3 class="text-warning">Add a comment:</h3>
+        <form @submit.prevent="submitComment">
+          <div class="mb-3">
+            <textarea v-model="newComment" class="form-control bg-dark text-light border-warning" rows="3" placeholder="Write your comment..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-warning w-100">Comment</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -54,7 +87,9 @@ import axios from 'axios';
 const route = useRoute();
 const question = ref(null);
 const answers = ref([]);
+const comments = ref([]);
 const newAnswer = ref("");
+const newComment = ref("");
 const loading = ref(true);
 const error = ref(null);
 
@@ -65,6 +100,7 @@ const fetchQuestion = async () => {
     const response = await axios.get(`http://127.0.0.1:8000/questions/${route.params.id}/?t=${new Date().getTime()}`);
     question.value = response.data.question;
     answers.value = response.data.answers;
+    comments.value = response.data.comments;
   } catch (err) {
     error.value = "Error loading the question.";
   } finally {
@@ -82,33 +118,46 @@ const submitAnswer = async () => {
   }
 
   try {
-    const response = await axios.post(
+    await axios.post(
         `http://127.0.0.1:8000/questions/${route.params.id}/answers/`,
         { content: newAnswer.value },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    console.log("Answer added:", response.data);
-
     newAnswer.value = "";
-
     await fetchQuestion();
-
   } catch (err) {
-    console.error("Error adding the answer", err);
-    alert("Failed to add the answer. Please check your authentication.");
+    alert("Failed to add the answer.");
+  }
+};
+
+const submitComment = async () => {
+  if (!newComment.value.trim()) return;
+
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to post a comment.");
+    return;
+  }
+
+  try {
+    await axios.post(
+        `http://127.0.0.1:8000/questions/${route.params.id}/comments/`,
+        { content: newComment.value },
+        { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    newComment.value = "";
+    await fetchQuestion();
+  } catch (err) {
+    alert("Failed to add the comment.");
   }
 };
 
 const deleteAnswer = async (id) => {
   const token = localStorage.getItem("access");
   if (!token) {
-    alert("You must be logged in to delete a answer.");
+    alert("You must be logged in to delete an answer.");
     return;
   }
 
@@ -118,9 +167,28 @@ const deleteAnswer = async (id) => {
     await axios.delete(`http://localhost:8000/answer/delete/${id}/`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    answers.value = answers.value.filter(a => a.id !== id);
+    await fetchQuestion();
   } catch (err) {
     alert("Failed to delete the answer.");
+  }
+};
+
+const deleteComment = async (id) => {
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to delete a comment.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this comment?")) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/comments/delete/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    await fetchQuestion();
+  } catch (err) {
+    alert("Failed to delete the comment.");
   }
 };
 
@@ -145,17 +213,12 @@ onMounted(fetchQuestion);
 <style scoped>
 .container-lg {
   max-width: 1200px;
-  margin: auto;
+  margin-top: 100px;
 }
-
 .card {
   border-radius: 15px;
-  padding: 20px;
-  margin-top: 20px;
-  box-shadow: 0px 4px 10px rgba(248, 210, 16, 0.5);
 }
-
-.answer-container {
+.comment-container {
   background: rgba(255, 193, 7, 0.1);
   border-radius: 10px;
 }

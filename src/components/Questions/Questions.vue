@@ -1,5 +1,5 @@
 <template>
-  <div class="container-lg mt-5">
+  <div class="container-lg mb-5">
     <h1 class="text-center display-3 fw-bold text-warning">📜 List of Questions</h1>
 
     <div v-if="loading" class="text-center mt-5">
@@ -12,7 +12,7 @@
 
     <div v-else class="card bg-dark text-light border-warning shadow-lg p-4">
       <div class="card-body">
-        <h2 class="text-warning fw-bold">📌 Questions:</h2>
+        <h1 class="text-warning fw-bold">📌 Questions</h1>
         <div class="question-container border-warning shadow-lg p-3 rounded" style="max-height: 500px; overflow-y: auto;">
           <ul class="list-group">
             <li v-for="question in questions" :key="question.id" class="list-group-item bg-dark text-light border-warning mb-2">
@@ -29,21 +29,22 @@
           </ul>
         </div>
       </div>
-    </div>
 
-    <div class="mt-5 p-4 bg-dark text-light border-warning shadow rounded">
-      <h2 class="text-warning">📝 Post a Question</h2>
-      <form @submit.prevent="postQuestion">
-        <div class="mb-3">
-          <label for="title" class="form-label">Title</label>
-          <input type="text" id="title" v-model="newQuestion.title" class="form-control bg-dark text-light border-warning" required>
-        </div>
-        <div class="mb-3">
-          <label for="question" class="form-label">Question</label>
-          <textarea id="question" v-model="newQuestion.question" class="form-control bg-dark text-light border-warning" rows="4" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-warning w-100">Submit</button>
-      </form>
+      <hr class="border-warning">
+      <div class="mt-4">
+        <h2 class="text-warning">📝 Post a Question</h2>
+        <form @submit.prevent="postQuestion">
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" id="title" v-model="newQuestion.title" class="form-control bg-dark text-light border-warning" required>
+          </div>
+          <div class="mb-3">
+            <label for="question" class="form-label">Question</label>
+            <textarea id="question" v-model="newQuestion.question" class="form-control bg-dark text-light border-warning" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-warning w-100">Submit</button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -58,6 +59,8 @@ const questions = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const newQuestion = ref({ title: '', question: '' });
+const isAuthenticated = ref(false);
+const currentUser = ref(null);
 
 const fetchQuestions = async () => {
   loading.value = true;
@@ -69,6 +72,21 @@ const fetchQuestions = async () => {
     error.value = 'Error loading questions';
   } finally {
     loading.value = false;
+  }
+};
+
+const checkAuth = async () => {
+  const token = localStorage.getItem("access");
+  if (token) {
+    try {
+      const response = await axios.get('http://localhost:8000/auth/user/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      currentUser.value = response.data.username;
+      isAuthenticated.value = true;
+    } catch (err) {
+      isAuthenticated.value = false;
+    }
   }
 };
 
@@ -111,13 +129,16 @@ const deleteQuestion = async (id) => {
   }
 };
 
-onMounted(fetchQuestions);
+onMounted(() => {
+  fetchQuestions();
+  checkAuth();
+});
 </script>
 
 <style scoped>
 .container-lg {
-  max-width: 900px;
-  margin: auto;
+  max-width: 1200px;
+  margin-top: 100px;
 }
 
 .card {
