@@ -22,7 +22,11 @@
               <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">
                 🔍 View Question
               </router-link>
-              <button @click="deleteQuestion(question.id)" class="btn btn-outline-danger btn-sm mt-2">
+
+              <button
+                  v-if="isAuthenticated && question.author === currentUser"
+                  @click="deleteQuestion(question.id)"
+                  class="btn btn-outline-danger btn-sm mt-2">
                 🗑 Delete
               </button>
             </li>
@@ -31,7 +35,8 @@
       </div>
 
       <hr class="border-warning">
-      <div class="mt-4">
+
+      <div v-if="isAuthenticated" class="mt-4">
         <h2 class="text-warning">📝 Post a Question</h2>
         <form @submit.prevent="postQuestion">
           <div class="mb-3">
@@ -52,15 +57,13 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useAuth } from "@/composables/useAuth";
 
-const router = useRouter();
+const { user: currentUser, isAuthenticated } = useAuth();
 const questions = ref([]);
 const loading = ref(false);
 const error = ref(null);
 const newQuestion = ref({ title: '', question: '' });
-const isAuthenticated = ref(false);
-const currentUser = ref(null);
 
 const fetchQuestions = async () => {
   loading.value = true;
@@ -75,24 +78,8 @@ const fetchQuestions = async () => {
   }
 };
 
-const checkAuth = async () => {
-  const token = localStorage.getItem("access");
-  if (token) {
-    try {
-      const response = await axios.get('http://localhost:8000/auth/user/', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      currentUser.value = response.data.username;
-      isAuthenticated.value = true;
-    } catch (err) {
-      isAuthenticated.value = false;
-    }
-  }
-};
-
 const postQuestion = async () => {
-  const token = localStorage.getItem("access");
-  if (!token) {
+  if (!isAuthenticated.value) {
     alert("You must be logged in to post a question.");
     return;
   }
@@ -101,7 +88,7 @@ const postQuestion = async () => {
     await axios.post(
         'http://localhost:8000/questions/create/',
         newQuestion.value,
-        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('access')}`, "Content-Type": "application/json" } }
     );
     newQuestion.value = { title: '', question: '' };
     await fetchQuestions();
@@ -111,8 +98,7 @@ const postQuestion = async () => {
 };
 
 const deleteQuestion = async (id) => {
-  const token = localStorage.getItem("access");
-  if (!token) {
+  if (!isAuthenticated.value) {
     alert("You must be logged in to delete a question.");
     return;
   }
@@ -121,7 +107,7 @@ const deleteQuestion = async (id) => {
 
   try {
     await axios.delete(`http://localhost:8000/questions/delete/${id}/`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
     });
     questions.value = questions.value.filter(q => q.id !== id);
   } catch (err) {
@@ -129,10 +115,7 @@ const deleteQuestion = async (id) => {
   }
 };
 
-onMounted(() => {
-  fetchQuestions();
-  checkAuth();
-});
+onMounted(fetchQuestions);
 </script>
 
 <style scoped>

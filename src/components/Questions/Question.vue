@@ -25,7 +25,7 @@
               <p>Author: <strong>{{ answer.author || "Unknown author" }}</strong></p>
               <p class="small">📅 {{ formatDate(answer.date_created) }}</p>
               <div>
-                <button @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm mt-2">
+                <button v-if="isAuthenticated && answer.author === currentUser" @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm mt-2">
                   🗑 Delete
                 </button>
               </div>
@@ -35,7 +35,7 @@
       </div>
       <div v-else class="alert alert-warning text-center mt-4">No answers for this question.</div>
 
-      <div class="mt-4">
+      <div v-if="isAuthenticated" class="mt-4">
         <h3 class="text-warning">Add an answer:</h3>
         <form @submit.prevent="submitAnswer">
           <div class="mb-3">
@@ -56,7 +56,7 @@
               <p>Author: <strong>{{ comment.author || "Unknown author" }}</strong></p>
               <p class="small">📅 {{ formatDate(comment.date_created) }}</p>
               <div>
-                <button @click="deleteComment(comment.id)" class="btn btn-outline-danger btn-sm mt-2">
+                <button v-if="isAuthenticated && comment.author === currentUser" @click="deleteComment(comment.id)" class="btn btn-outline-danger btn-sm mt-2">
                   🗑 Delete
                 </button>
               </div>
@@ -66,7 +66,7 @@
       </div>
       <div v-else class="alert alert-warning text-center mt-4">No comments for this question.</div>
 
-      <div class="mt-4">
+      <div v-if="isAuthenticated" class="mt-4">
         <h3 class="text-warning">Add a comment:</h3>
         <form @submit.prevent="submitComment">
           <div class="mb-3">
@@ -83,6 +83,7 @@
 import { ref, onMounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
+import {useAuth} from "@/composables/useAuth.js";
 
 const route = useRoute();
 const question = ref(null);
@@ -92,6 +93,8 @@ const newAnswer = ref("");
 const newComment = ref("");
 const loading = ref(true);
 const error = ref(null);
+const { user: currentUser, isAuthenticated } = useAuth();
+
 
 const fetchQuestion = async () => {
   loading.value = true;
