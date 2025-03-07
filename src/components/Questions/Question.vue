@@ -13,6 +13,16 @@
         <h1 class="card-title text-warning fw-bold">📌 {{ question.title }}</h1>
         <h2 class="card-text fs-5">📝 {{ question.question }}</h2>
         <h5>🤵‍♂️ {{ question.author }}</h5>
+        <router-link
+            v-if="isAuthenticated && question.author === currentUser" :to="`/question/edit/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">✏️ Edit
+        </router-link>
+
+        <button
+            v-if="isAuthenticated && question.author === currentUser"
+            @click="deleteQuestion(question.id)"
+            class="btn btn-outline-danger btn-sm mt-2 me-2">
+          🗑 Delete
+        </button>
       </div>
 
       <hr class="border-warning">
@@ -25,9 +35,14 @@
               <p>Author: <strong>{{ answer.author || "Unknown author" }}</strong></p>
               <p class="small">📅 {{ formatDate(answer.date_created) }}</p>
               <div>
-                <button v-if="isAuthenticated && answer.author === currentUser" @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm mt-2">
-                  🗑 Delete
-                </button>
+                <div>
+                  <router-link :to="`/answers/${answer.id}/edit`" class="btn btn-outline-warning btn-sm me-2">
+                    ✏️ Edit
+                  </router-link>
+                  <button v-if="isAuthenticated && answer.author === currentUser" @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm me-2">
+                    🗑 Delete
+                  </button>
+                </div>
               </div>
             </li>
           </ul>
@@ -56,9 +71,15 @@
               <p>Author: <strong>{{ comment.author || "Unknown author" }}</strong></p>
               <p class="small">📅 {{ formatDate(comment.date_created) }}</p>
               <div>
-                <button v-if="isAuthenticated && comment.author === currentUser" @click="deleteComment(comment.id)" class="btn btn-outline-danger btn-sm mt-2">
-                  🗑 Delete
-                </button>
+                <div>
+                  <router-link :to="`/comments/${comment.id}/edit`" class="btn btn-outline-warning btn-sm me-2">
+                    ✏️ Edit
+                  </router-link>
+                  <button v-if="isAuthenticated && comment.author === currentUser" @click="deleteComment(comment.id)" class="btn btn-outline-danger btn-sm">
+                    🗑 Delete
+                  </button>
+                </div>
+
               </div>
             </li>
           </ul>
@@ -222,6 +243,11 @@ onMounted(fetchQuestion);
   border-radius: 15px;
 }
 .comment-container {
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 10px;
+}
+
+.answer-container {
   background: rgba(255, 193, 7, 0.1);
   border-radius: 10px;
 }
