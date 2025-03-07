@@ -16,9 +16,12 @@
         <p class="mb-2 fs-5">📝 {{ question.question }}</p>
         <p>🤵‍♂️ {{ question.author }}</p>
 
-        <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2">
+        <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">
           🔍 View Question
         </router-link>
+        <button @click="deleteQuestion(question.id)" class="btn btn-outline-danger btn-sm mt-2">
+          🗑 Delete
+        </button>
       </li>
     </ul>
 
@@ -80,6 +83,25 @@ const postQuestion = async () => {
     await fetchQuestions();
   } catch (err) {
     alert("Failed to post the question. Check your authentication.");
+  }
+};
+
+const deleteQuestion = async (id) => {
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to delete a question.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this question?")) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/questions/delete/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    questions.value = questions.value.filter(q => q.id !== id);
+  } catch (err) {
+    alert("Failed to delete the question.");
   }
 };
 

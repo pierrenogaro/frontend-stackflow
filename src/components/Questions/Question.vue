@@ -24,6 +24,9 @@
               <p class="mb-2 fs-5">🗨️ {{ answer.content || "No message" }}</p>
               <p>Author: <strong>{{ answer.author || "Unknown author" }}</strong></p>
               <p class="small">📅 {{ formatDate(answer.date_created) }}</p>
+              <button @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm mt-2">
+                🗑 Delete
+              </button>
             </li>
           </ul>
         </div>
@@ -99,6 +102,25 @@ const submitAnswer = async () => {
   } catch (err) {
     console.error("Error adding the answer", err);
     alert("Failed to add the answer. Please check your authentication.");
+  }
+};
+
+const deleteAnswer = async (id) => {
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to delete a answer.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this answer?")) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/answer/delete/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    answers.value = answers.value.filter(a => a.id !== id);
+  } catch (err) {
+    alert("Failed to delete the answer.");
   }
 };
 
