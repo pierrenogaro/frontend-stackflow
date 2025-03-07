@@ -5,12 +5,14 @@ import RegisterView from "@/views/RegisterView.vue";
 import LoginView from "@/views/LoginView.vue";
 import DashboardView from "@/views/DashboardView.vue";
 import { useAuth } from "@/composables/useAuth";
+import Profile from "@/components/Profile/Profile.vue";
 
 export const routes = [
     { path: "/questions", component: Questions },
     { path: "/question/:id", component: Question },
     { path: "/register", component: RegisterView },
     { path: "/login", component: LoginView },
+    { path: "/profile", component: Profile },
     {
         path: "/dashboard",
         component: DashboardView,

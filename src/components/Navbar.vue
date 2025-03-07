@@ -11,21 +11,14 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <RouterLink class="nav-link" to="/home">Home</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link" to="/favorite">Favorite</RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link" to="/profile">Profile</RouterLink>
-          </li>
-          <li class="nav-item">
             <RouterLink class="nav-link" to="/questions">Questions</RouterLink>
           </li>
         </ul>
 
         <div v-if="isAuthenticated">
-          <span class="navbar-text text-warning fw-bold me-3">👤 {{ username }}</span>
+          <RouterLink class="navbar-text text-warning fw-bold me-3 no-underline" :to="`/profile`">
+            👤 {{ username }}
+          </RouterLink>
           <button class="btn btn-danger" @click="handleLogout">Logout</button>
         </div>
 
@@ -79,4 +72,9 @@ const handleLogout = () => {
   background-color: #ffbe0b;
   border-color: #ffbe0b;
 }
+
+.navbar-text {
+  text-decoration: none !important;
+}
+
 </style>

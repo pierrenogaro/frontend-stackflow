@@ -21,6 +21,21 @@
         </router-link>
       </li>
     </ul>
+
+    <div class="mt-5 p-4 bg-dark text-light border-warning shadow rounded">
+      <h2 class="text-warning">📝 Post a Question</h2>
+      <form @submit.prevent="postQuestion">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" id="title" v-model="newQuestion.title" class="form-control bg-dark text-light border-warning" required>
+        </div>
+        <div class="mb-3">
+          <label for="question" class="form-label">Question</label>
+          <textarea id="question" v-model="newQuestion.question" class="form-control bg-dark text-light border-warning" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning w-100">Submit</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -33,6 +48,7 @@ const router = useRouter();
 const questions = ref([]);
 const loading = ref(false);
 const error = ref(null);
+const newQuestion = ref({ title: '', question: '' });
 
 const fetchQuestions = async () => {
   loading.value = true;
@@ -44,6 +60,26 @@ const fetchQuestions = async () => {
     error.value = 'Error loading questions';
   } finally {
     loading.value = false;
+  }
+};
+
+const postQuestion = async () => {
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to post a question.");
+    return;
+  }
+
+  try {
+    await axios.post(
+        'http://localhost:8000/questions/create/',
+        newQuestion.value,
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    newQuestion.value = { title: '', question: '' };
+    await fetchQuestions();
+  } catch (err) {
+    alert("Failed to post the question. Check your authentication.");
   }
 };
 
@@ -72,5 +108,9 @@ onMounted(fetchQuestions);
 
 .text-warning {
   color: #f8d210 !important;
+}
+
+.bg-dark {
+  background-color: #212529 !important;
 }
 </style>
