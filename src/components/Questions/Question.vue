@@ -36,10 +36,16 @@
               <p class="small">📅 {{ formatDate(answer.date_created) }}</p>
               <div>
                 <div>
-                  <router-link :to="`/answers/${answer.id}/edit`" class="btn btn-outline-warning btn-sm me-2">
+                  <router-link
+                      v-if="isAuthenticated && answer.author === currentUser"
+                      :to="`/answers/${answer.id}/edit`"
+                      class="btn btn-outline-warning btn-sm me-2">
                     ✏️ Edit
                   </router-link>
-                  <button v-if="isAuthenticated && answer.author === currentUser" @click="deleteAnswer(answer.id)" class="btn btn-outline-danger btn-sm me-2">
+                  <button
+                      v-if="isAuthenticated && answer.author === currentUser"
+                      @click="deleteAnswer(answer.id)"
+                      class="btn btn-outline-danger btn-sm me-2">
                     🗑 Delete
                   </button>
                 </div>
@@ -72,14 +78,19 @@
               <p class="small">📅 {{ formatDate(comment.date_created) }}</p>
               <div>
                 <div>
-                  <router-link :to="`/comments/${comment.id}/edit`" class="btn btn-outline-warning btn-sm me-2">
+                  <router-link
+                      v-if="isAuthenticated && comment.author === currentUser"
+                      :to="`/comments/${comment.id}/edit`"
+                      class="btn btn-outline-warning btn-sm me-2">
                     ✏️ Edit
                   </router-link>
-                  <button v-if="isAuthenticated && comment.author === currentUser" @click="deleteComment(comment.id)" class="btn btn-outline-danger btn-sm">
+                  <button
+                      v-if="isAuthenticated && comment.author === currentUser"
+                      @click="deleteComment(comment.id)"
+                      class="btn btn-outline-danger btn-sm">
                     🗑 Delete
                   </button>
                 </div>
-
               </div>
             </li>
           </ul>
@@ -213,6 +224,25 @@ const deleteComment = async (id) => {
     await fetchQuestion();
   } catch (err) {
     alert("Failed to delete the comment.");
+  }
+};
+
+const deleteQuestion = async (id) => {
+  const token = localStorage.getItem("access");
+  if (!token) {
+    alert("You must be logged in to delete a question.");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to delete this question?")) return;
+
+  try {
+    await axios.delete(`http://localhost:8000/questions/delete/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    router.push('/questions');
+  } catch (err) {
+    alert("Failed to delete the question.");
   }
 };
 

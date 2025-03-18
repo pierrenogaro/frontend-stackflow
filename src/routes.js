@@ -9,13 +9,15 @@ import Profile from "@/components/Profile/Profile.vue";
 import QuestionEdit from "@/components/Questions/QuestionEdit.vue";
 import CommentEdit from "@/components/Comments/CommentEdit.vue";
 import AnswerEdit from "@/components/Answers/AnswerEdit.vue";
+import ProfileEdit from "@/components/Profile/ProfileEdit.vue";
 
 export const routes = [
     { path: "/questions", component: Questions },
     { path: "/question/:id", component: Question },
     { path: "/register", component: RegisterView },
     { path: "/login", component: LoginView },
-    { path: "/profile", component: Profile },
+    { path: "/profile", component: Profile, meta: { requiresAuth: true } },
+    { path: "/profile/edit", component: ProfileEdit, meta: { requiresAuth: true } },
     { path: "/question/edit/:id", component: QuestionEdit,meta: { requiresAuth: true }},
     { path: "/comments/:id/edit", component: CommentEdit, meta: { requiresAuth: true } },
     { path: "/answers/:id/edit", component: AnswerEdit, meta: { requiresAuth: true } },

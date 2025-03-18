@@ -22,7 +22,7 @@
               <router-link :to="`/question/${question.id}`" class="btn btn-outline-warning btn-sm mt-2 me-2">
                 🔍 View Question
               </router-link>
-              <button class="btn btn-outline-info btn-sm mt-2">
+              <button @click="addToFavorites(question)" class="btn btn-outline-info btn-sm mt-2">
                 ❤️ Add Favorite
               </button>
             </li>
@@ -111,6 +111,37 @@ const deleteQuestion = async (id) => {
   }
 };
 
+const addToFavorites = (question) => {
+  if (!isAuthenticated.value) {
+    alert("You must be logged in to add favorites.");
+    return;
+  }
+
+  const userFavoritesKey = `userFavorites_${currentUser.value}`;
+  let favorites = JSON.parse(localStorage.getItem(userFavoritesKey)) || [];
+
+  const isAlreadyFavorite = favorites.some(fav => fav.id === question.id);
+
+  if (isAlreadyFavorite) {
+    alert("This question is already in your favorites.");
+    return;
+  }
+
+  favorites.push({
+    id: question.id,
+    title: question.title,
+    author: question.author
+  });
+
+  localStorage.setItem(userFavoritesKey, JSON.stringify(favorites));
+
+  const userProfileKey = `userProfile_${currentUser.value}`;
+  const userProfile = JSON.parse(localStorage.getItem(userProfileKey)) || {};
+  userProfile.favorite_count = favorites.length;
+  localStorage.setItem(userProfileKey, JSON.stringify(userProfile));
+
+  alert("Question added to favorites!");
+}
 onMounted(fetchQuestions);
 </script>
 
