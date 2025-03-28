@@ -17,7 +17,7 @@ export function useAuth() {
     const register = async (username, password) => {
         error.value = null;
         try {
-            await axios.post("https://frontend-stackflow.pierrenogaro.com/register/", { username, password });
+            await axios.post("https://stackflow.pierrenogaro.com/register/", { username, password });
             return true;
         } catch (err) {
             error.value = err.response?.data?.error || "Registration error";
@@ -28,7 +28,7 @@ export function useAuth() {
     const login = async (username, password) => {
         error.value = null;
         try {
-            const response = await axios.post("https://frontend-stackflow.pierrenogaro.com/login/", { username, password });
+            const response = await axios.post("https://stackflow.pierrenogaro.com/login/", { username, password });
 
             token.value = response.data.access;
             localStorage.setItem("access", response.data.access);
@@ -49,7 +49,7 @@ export function useAuth() {
         try {
             const refreshToken = localStorage.getItem("refresh");
             if (refreshToken) {
-                await axios.post("https://frontend-stackflow.pierrenogaro.com/logout/", { refresh: refreshToken });
+                await axios.post("https://stackflow.pierrenogaro.com/logout/", { refresh: refreshToken });
             }
         } catch (err) {
             console.error("Logout failed", err);

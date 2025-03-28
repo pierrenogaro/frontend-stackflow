@@ -46,7 +46,7 @@ const fetchComment = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get(`https://frontend-stackflow.pierrenogaro.com/comments/${commentId}/?t=${new Date().getTime()}`);
+    const response = await axios.get(`https://stackflow.pierrenogaro.com/comments/${commentId}/?t=${new Date().getTime()}`);
     comment.value = {
       content: response.data.content,
     };
@@ -66,7 +66,7 @@ const updateComment = async () => {
 
   try {
     await axios.put(
-        `https://frontend-stackflow.pierrenogaro.com/comments/update/${commentId}/`,
+        `https://stackflow.pierrenogaro.com/comments/update/${commentId}/`,
         comment.value,
         { headers: { Authorization: `Bearer ${localStorage.getItem('access')}`, "Content-Type": "application/json" } }
     );
