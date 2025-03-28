@@ -132,7 +132,7 @@ const fetchQuestion = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/questions/${route.params.id}/?t=${new Date().getTime()}`);
+    const response = await axios.get(`https://frontend-stackflow.pierrenogaro.com/questions/${route.params.id}/?t=${new Date().getTime()}`);
     question.value = response.data.question;
     answers.value = response.data.answers;
     comments.value = response.data.comments;
@@ -154,7 +154,7 @@ const submitAnswer = async () => {
 
   try {
     await axios.post(
-        `http://127.0.0.1:8000/questions/${route.params.id}/answers/`,
+        `https://frontend-stackflow.pierrenogaro.com/questions/${route.params.id}/answers/`,
         { content: newAnswer.value },
         { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -177,7 +177,7 @@ const submitComment = async () => {
 
   try {
     await axios.post(
-        `http://127.0.0.1:8000/questions/${route.params.id}/comments/`,
+        `https://frontend-stackflow.pierrenogaro.com/questions/${route.params.id}/comments/`,
         { content: newComment.value },
         { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -199,7 +199,7 @@ const deleteAnswer = async (id) => {
   if (!confirm("Are you sure you want to delete this answer?")) return;
 
   try {
-    await axios.delete(`http://localhost:8000/answer/delete/${id}/`, {
+    await axios.delete(`https://frontend-stackflow.pierrenogaro.com/answer/delete/${id}/`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     await fetchQuestion();
@@ -218,7 +218,7 @@ const deleteComment = async (id) => {
   if (!confirm("Are you sure you want to delete this comment?")) return;
 
   try {
-    await axios.delete(`http://localhost:8000/comments/delete/${id}/`, {
+    await axios.delete(`https://frontend-stackflow.pierrenogaro.com/comments/delete/${id}/`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     await fetchQuestion();
@@ -237,7 +237,7 @@ const deleteQuestion = async (id) => {
   if (!confirm("Are you sure you want to delete this question?")) return;
 
   try {
-    await axios.delete(`http://localhost:8000/questions/delete/${id}/`, {
+    await axios.delete(`https://frontend-stackflow.pierrenogaro.com/questions/delete/${id}/`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     router.push('/questions');

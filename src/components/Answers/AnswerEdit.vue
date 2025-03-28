@@ -46,7 +46,7 @@ const fetchAnswer = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get(`http://localhost:8000/answers/${answerId}/?t=${new Date().getTime()}`);
+    const response = await axios.get(`https://frontend-stackflow.pierrenogaro.com/answers/${answerId}/?t=${new Date().getTime()}`);
     answer.value = { content: response.data.content };
     questionId.value = response.data.question;
   } catch (err) {
@@ -61,7 +61,7 @@ const updateAnswer = async () => {
 
   try {
     await axios.put(
-        `http://localhost:8000/answer/update/${answerId}/`,
+        `https://frontend-stackflow.pierrenogaro.com/answer/update/${answerId}/`,
         answer.value,
         { headers: { Authorization: `Bearer ${localStorage.getItem('access')}`, "Content-Type": "application/json" } }
     );

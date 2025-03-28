@@ -65,7 +65,7 @@ const fetchQuestions = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get('http://localhost:8000/questions/');
+    const response = await axios.get('https://frontend-stackflow.pierrenogaro.com/questions/');
     questions.value = response.data;
   } catch (err) {
     error.value = 'Error loading questions';
@@ -82,7 +82,7 @@ const postQuestion = async () => {
 
   try {
     await axios.post(
-        'http://localhost:8000/questions/create/',
+        'https://frontend-stackflow.pierrenogaro.com/questions/create/',
         newQuestion.value,
         { headers: { Authorization: `Bearer ${localStorage.getItem('access')}`, "Content-Type": "application/json" } }
     );
@@ -102,7 +102,7 @@ const deleteQuestion = async (id) => {
   if (!confirm("Are you sure you want to delete this question?")) return;
 
   try {
-    await axios.delete(`http://localhost:8000/questions/delete/${id}/`, {
+    await axios.delete(`https://frontend-stackflow.pierrenogaro.com/questions/delete/${id}/`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
     });
     questions.value = questions.value.filter(q => q.id !== id);

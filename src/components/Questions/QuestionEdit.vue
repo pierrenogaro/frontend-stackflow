@@ -49,7 +49,7 @@ const fetchQuestion = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await axios.get(`http://localhost:8000/questions/${questionId}/?t=${new Date().getTime()}`);
+    const response = await axios.get(`https://frontend-stackflow.pierrenogaro.com/questions/${questionId}/?t=${new Date().getTime()}`);
     question.value = {
       title: response.data.question.title,
       question: response.data.question.question
@@ -69,7 +69,7 @@ const updateQuestion = async () => {
 
   try {
     await axios.put(
-        `http://localhost:8000/questions/update/${questionId}/`,
+        `https://frontend-stackflow.pierrenogaro.com/questions/update/${questionId}/`,
         question.value,
         { headers: { Authorization: `Bearer ${localStorage.getItem('access')}`, "Content-Type": "application/json" } }
     );
