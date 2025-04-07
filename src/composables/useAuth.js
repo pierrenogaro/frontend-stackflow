@@ -7,40 +7,6 @@ const token = ref(localStorage.getItem("access") || null);
 const error = ref(null);
 const isAuthenticated = computed(() => !!token.value);
 
-axios.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-        if (error.response && error.response.status === 401 && !originalRequest._retry) {
-            originalRequest._retry = true;
-            try {
-                const refreshToken = localStorage.getItem("refresh");
-                if (!refreshToken) {
-                    throw new Error("No refresh token available");
-                }
-
-                const response = await axios.post(
-                    "https://stackflow.pierrenogaro.com/token/refresh/",
-                    { refresh: refreshToken }
-                );
-
-                const newAccessToken = response.data.access;
-                localStorage.setItem("access", newAccessToken);
-                axios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
-                originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-
-                return axios(originalRequest);
-            } catch (refreshError) {
-                localStorage.removeItem("access");
-                localStorage.removeItem("refresh");
-                localStorage.removeItem("user");
-                return Promise.reject(refreshError);
-            }
-        }
-        return Promise.reject(error);
-    }
-);
-
 export function useAuth() {
     const router = useRouter();
 
@@ -79,26 +45,6 @@ export function useAuth() {
         }
     };
 
-    const refreshToken = async () => {
-        try {
-            const refreshToken = localStorage.getItem("refresh");
-            if (!refreshToken) throw new Error("No refresh token");
-
-            const response = await axios.post(
-                "https://stackflow.pierrenogaro.com/token/refresh/",
-                { refresh: refreshToken }
-            );
-
-            token.value = response.data.access;
-            localStorage.setItem("access", response.data.access);
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token.value}`;
-            return true;
-        } catch (err) {
-            error.value = "Session expired. Please login again.";
-            return false;
-        }
-    };
-
     const logout = async () => {
         try {
             const refreshToken = localStorage.getItem("refresh");
@@ -126,6 +72,5 @@ export function useAuth() {
         register,
         login,
         logout,
-        refreshToken
     };
 }
