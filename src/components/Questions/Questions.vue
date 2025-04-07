@@ -55,7 +55,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuth } from "@/composables/useAuth";
 
-const { user: currentUser, isAuthenticated } = useAuth();
+const { user: currentUser, isAuthenticated, checkTokenValidity } = useAuth();
 const questions = ref([]);
 const loading = ref(false);
 const error = ref(null);
@@ -81,16 +81,20 @@ const postQuestion = async () => {
   }
 
   try {
+    const isTokenValid = await checkTokenValidity();
+    if (!isTokenValid) {
+      alert("Your session has expired. Please log in again.");
+      return;
+    }
+
     const token = localStorage.getItem("access");
-
-    console.log("Using token:", token);
-
     await axios.post(
         'https://stackflow.pierrenogaro.com/questions/create/',
         newQuestion.value,
         {
           headers: {
-            "Authorization": `Bearer ${token}`, "Content-Type": "application/json"
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
           }
         }
     );
@@ -98,6 +102,7 @@ const postQuestion = async () => {
     await fetchQuestions();
   } catch (err) {
     console.error("Error posting question:", err.response || err);
+    alert("Failed to post the question. Check your authentication.");
   }
 };
 
