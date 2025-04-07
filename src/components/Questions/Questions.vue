@@ -92,7 +92,7 @@ const postQuestion = async () => {
     console.log("Sending request with token:", token);
 
     const response = await axios.post(
-        'https://frontend-stackflow.pierrenogaro.com/questions/create/',
+        'https://stackflow.pierrenogaro.com/questions/create/',
         newQuestion.value,
         {
           headers: {
