@@ -84,10 +84,15 @@ const postQuestion = async () => {
     await checkTokenValidity();
     const token = localStorage.getItem("access");
 
+    if (!token) {
+      alert("Token d'authentification manquant. Veuillez vous reconnecter.");
+      return;
+    }
+
     console.log("Sending request with token:", token);
 
     const response = await axios.post(
-        'https://stackflow.pierrenogaro.com/questions/create/',
+        'https://frontend-stackflow.pierrenogaro.com/questions/create/',
         newQuestion.value,
         {
           headers: {
@@ -100,8 +105,14 @@ const postQuestion = async () => {
     await fetchQuestions();
   } catch (err) {
     console.error("Error posting question:", err);
+    if (err.response) {
+      console.error("Response data:", err.response.data);
+      console.error("Response status:", err.response.status);
+      console.error("Response headers:", err.response.headers);
+    }
   }
 };
+
 
 const deleteQuestion = async (id) => {
   if (!isAuthenticated.value) {
