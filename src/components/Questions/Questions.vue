@@ -100,7 +100,6 @@ const postQuestion = async () => {
     await fetchQuestions();
   } catch (err) {
     console.error("Error posting question:", err);
-    alert("Failed to post the question. Check your authentication.");
   }
 };
 
