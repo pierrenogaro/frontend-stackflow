@@ -69,27 +69,8 @@ export function useAuth() {
         const accessToken = localStorage.getItem("access");
         if (!accessToken) return false;
 
-        try {
-            await axios.get("https://stackflow.pierrenogaro.com/user/", {
-                headers: { Authorization: `Bearer ${accessToken}` }
-            });
-            return true;
-        } catch (err) {
-            const refreshToken = localStorage.getItem("refresh");
-            if (refreshToken) {
-                try {
-                    const response = await axios.post("https://stackflow.pierrenogaro.com/token/refresh/", { refresh: refreshToken });
-                    token.value = response.data.access;
-                    localStorage.setItem("access", response.data.access);
-                    axios.defaults.headers.common["Authorization"] = `Bearer ${token.value}`;
-                    return true;
-                } catch (refreshErr) {
-                    logout();
-                    return false;
-                }
-            }
-            return false;
-        }
+        axios.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`;
+        return true;
     };
 
     return {

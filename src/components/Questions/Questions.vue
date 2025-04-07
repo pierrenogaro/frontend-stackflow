@@ -81,27 +81,25 @@ const postQuestion = async () => {
   }
 
   try {
-    const isTokenValid = await checkTokenValidity();
-    if (!isTokenValid) {
-      alert("Your session has expired. Please log in again.");
-      return;
-    }
-
+    await checkTokenValidity();
     const token = localStorage.getItem("access");
-    await axios.post(
+
+    console.log("Sending request with token:", token);
+
+    const response = await axios.post(
         'https://stackflow.pierrenogaro.com/questions/create/',
         newQuestion.value,
         {
           headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
+            "Authorization": `Bearer ${token}`
           }
         }
     );
+    console.log("Question posted successfully:", response);
     newQuestion.value = { title: '', question: '' };
     await fetchQuestions();
   } catch (err) {
-    console.error("Error posting question:", err.response || err);
+    console.error("Error posting question:", err);
     alert("Failed to post the question. Check your authentication.");
   }
 };
