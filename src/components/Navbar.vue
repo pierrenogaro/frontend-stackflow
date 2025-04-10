@@ -9,12 +9,6 @@
       </button>
 
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <RouterLink class="nav-link" to="/questions">Questions</RouterLink>
-          </li>
-        </ul>
-
         <div v-if="isAuthenticated">
           <RouterLink class="navbar-text text-warning fw-bold me-3 no-underline" :to="`/profile`">
             👤 {{ username }}
