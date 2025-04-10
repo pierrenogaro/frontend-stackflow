@@ -85,7 +85,7 @@ const postQuestion = async () => {
     const token = localStorage.getItem("access");
 
     if (!token) {
-      alert("Token d'authentification manquant. Veuillez vous reconnecter.");
+      alert("Authentication token missing. Please reconnect.");
       return;
     }
 
