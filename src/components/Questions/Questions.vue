@@ -127,7 +127,7 @@ const deleteQuestion = async (id) => {
     await axios.delete(`https://stackflow.pierrenogaro.com/questions/delete/${id}/`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    router.push('/');
+    router.push('/questions');
   } catch (err) {
     alert("Failed to delete the question.");
   }
