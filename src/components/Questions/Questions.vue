@@ -54,6 +54,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuth } from "@/composables/useAuth";
+import router from "@/routes.js";
 
 const { user: currentUser, isAuthenticated, checkTokenValidity } = useAuth();
 const questions = ref([]);
@@ -124,9 +125,9 @@ const deleteQuestion = async (id) => {
 
   try {
     await axios.delete(`https://stackflow.pierrenogaro.com/questions/delete/${id}/`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('access')}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
-    questions.value = questions.value.filter(q => q.id !== id);
+    router.push('/questions');
   } catch (err) {
     alert("Failed to delete the question.");
   }
