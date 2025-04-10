@@ -113,12 +113,12 @@
 
 <script setup>
 import { ref, onMounted, watchEffect } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import {useAuth} from "@/composables/useAuth.js";
-import router from "@/routes.js";
+import { useAuth } from "@/composables/useAuth.js";
 
 const route = useRoute();
+const router = useRouter();
 const question = ref(null);
 const answers = ref([]);
 const comments = ref([]);
@@ -224,25 +224,30 @@ const deleteComment = async (id) => {
     });
     await fetchQuestion();
   } catch (err) {
-    alert("Failed to delete the comment.");
+    console.log("Failed to delete the comment.");
   }
 };
 
 const deleteQuestion = async (id) => {
   const token = localStorage.getItem("access");
   if (!token) {
-    alert("You must be logged in to delete a question.");
+    console.log("You must be logged in to delete a question.");
     return;
   }
 
   if (!confirm("Are you sure you want to delete this question?")) return;
 
-  await axios.delete(`https://stackflow.pierrenogaro.com/questions/delete/${id}/`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  router.push('/questions');
+  try {
+    await axios.delete(`https://stackflow.pierrenogaro.com/questions/delete/${id}/`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    router.push('/questions');
+  } catch (err) {
+    console.log("Failed to delete the question.");
+  }
+};
 
-  watchEffect(() => {
+watchEffect(() => {
   fetchQuestion();
 });
 
