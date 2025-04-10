@@ -12,7 +12,7 @@ import AnswerEdit from "@/components/Answers/AnswerEdit.vue";
 import ProfileEdit from "@/components/Profile/ProfileEdit.vue";
 
 export const routes = [
-    { path: "/questions", component: Questions },
+    { path: "/", component: Questions },
     { path: "/question/:id", component: Question },
     { path: "/register", component: RegisterView },
     { path: "/login", component: LoginView },
