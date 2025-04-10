@@ -116,6 +116,7 @@ import { ref, onMounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
 import {useAuth} from "@/composables/useAuth.js";
+import router from "@/routes.js";
 
 const route = useRoute();
 const question = ref(null);
@@ -236,17 +237,12 @@ const deleteQuestion = async (id) => {
 
   if (!confirm("Are you sure you want to delete this question?")) return;
 
-  try {
-    await axios.delete(`https://stackflow.pierrenogaro.com/questions/delete/${id}/`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    router.push('/questions');
-  } catch (err) {
-    alert("Failed to delete the question.");
-  }
-};
+  await axios.delete(`https://stackflow.pierrenogaro.com/questions/delete/${id}/`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  router.push('/questions');
 
-watchEffect(() => {
+  watchEffect(() => {
   fetchQuestion();
 });
 
